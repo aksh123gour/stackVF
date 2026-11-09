@@ -58,13 +58,13 @@ svg{display:block;flex-shrink:0}
 .D{font-family:var(--disp);line-height:1;letter-spacing:.02em}
 .M{font-family:var(--mono);letter-spacing:.01em}
 .L{font-size:.65rem;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.38)}
-#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;touch-action:pan-y}
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 #hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--HDR);background:var(--gh);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
 .hdr-logo{font-family:var(--disp);font-size:1.5rem;letter-spacing:3px}
 .streak-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border:1px solid var(--b2);border-radius:99px;padding:4px 12px}
 .streak-pill span{font-family:var(--mono);font-size:.74rem}
 .hdr-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45)}
-#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px);touch-action:pan-y}
+#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px)}
 .page{display:none;animation:fu .2s ease both}
 .page.active{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -2356,36 +2356,32 @@ function handleImport(e){const file=e.target.files[0];if(!file)return;if(!confir
 function resetAll(){if(!confirm('Reset ALL data? This cannot be undone.'))return;['workouts','restDays','cons','streak','meals','mealPhotos','prog','prs','customFoods','customEx','water','supps','suppDone','sessions','bodyweight','notes','exOverrides','hiddenEx','measurements','templates'].forEach(k=>{S[k]=Array.isArray(S[k])?[]:typeof S[k]==='object'&&S[k]!==null?{}:0;sv(k)});toast('All data reset');goPage('dashboard');closeModal('mSettings')}
 
 
-// ── TAB SWIPING & APP INITIALIZATION ──
-const PAGES = ['dashboard', 'training', 'nutrition', 'progress', 'log'];
+// ── SWIPE NAVIGATION ──
+(function(){
+  var TAB = ['dashboard','training','nutrition','progress','log'];
+  var px = 0, py = 0, dragging = false;
 
-function initSwipeNavigation(){
-  const el = document.getElementById('scroll');
-  if(!el) return;
-  let sx = 0, sy = 0, st = 0;
+  window.addEventListener('pointerdown', function(e){
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    px = e.clientX; py = e.clientY; dragging = true;
+  });
 
-  // touchstart on #scroll — which has touch-action:pan-y so browser
-  // only intercepts vertical scroll; horizontal swipes come to JS
-  el.addEventListener('touchstart', e => {
-    if(e.touches.length !== 1) return;
-    sx = e.touches[0].clientX;
-    sy = e.touches[0].clientY;
-    st = Date.now();
-  }, {passive:true});
+  window.addEventListener('pointerup', function(e){
+    if(!dragging) return;
+    dragging = false;
+    if(document.querySelector('.overlay.on,.fullscreen.on')) return;
+    var dx = e.clientX - px;
+    var dy = e.clientY - py;
+    if(Math.abs(dx) < 50) return;
+    if(Math.abs(dy) > Math.abs(dx)) return;
+    var i = TAB.indexOf(page);
+    if(i < 0) return;
+    if(dx < 0 && i < TAB.length-1) goPage(TAB[i+1]);
+    if(dx > 0 && i > 0) goPage(TAB[i-1]);
+  });
 
-  el.addEventListener('touchend', e => {
-    if(e.changedTouches.length !== 1) return;
-    if(document.querySelector('.overlay.on, .fullscreen.on')) return;
-    const dx = e.changedTouches[0].clientX - sx;
-    const dy = e.changedTouches[0].clientY - sy;
-    const dt = Date.now() - st;
-    if(Math.abs(dx) < 35 || Math.abs(dx) < Math.abs(dy) * 1.2 || dt > 700) return;
-    const idx = PAGES.indexOf(page);
-    if(idx === -1) return;
-    if(dx < 0 && idx < PAGES.length - 1) goPage(PAGES[idx + 1]);
-    else if(dx > 0 && idx > 0) goPage(PAGES[idx - 1]);
-  }, {passive:true});
-}
+  window.addEventListener('pointercancel', function(){ dragging = false; });
+})();
 
 function init(){
   migrateCustomExIds();
@@ -2394,7 +2390,6 @@ function init(){
   document.getElementById('greeting').textContent = h < 12 ? 'MORNING' : h < 17 ? 'AFTERNOON' : 'EVENING';
   rDash();
   checkActiveSessionRecovery();
-  initSwipeNavigation();
   if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>{if(r.active&&r.active.scriptURL.indexOf('service-worker.js')===-1)r.unregister()}));navigator.serviceWorker.register('./service-worker.js').catch(()=>{});}
 }
 window.addEventListener('load', init);
