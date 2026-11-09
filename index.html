@@ -40,7 +40,7 @@ svg{display:block;flex-shrink:0}
 .chip.on{background:rgba(255,59,48,.14);border-color:rgba(255,59,48,.4);color:#fff}
 .pr-badge{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--green,#22C55E);background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:2px 7px;display:inline-flex;align-items:center;gap:3px;letter-spacing:.03em}
 .du{color:var(--green,#22C55E);font-weight:600}.dd{color:var(--red,#FF3B30);font-weight:600}.df{color:rgba(255,255,255,.28);font-weight:500}
-#activeWorkoutBar{position:fixed;top:var(--HDR);left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:40px;background:#FF3B30;color:#fff;z-index:99;display:none;align-items:center;justify-content:space-between;padding:0 16px;cursor:pointer;box-shadow:0 4px 14px rgba(255,59,48,.35);animation:fu .2s ease}
+#activeWorkoutBar{position:fixed;top:var(--HDR);left:0;right:0;margin:0 auto;width:100%;max-width:430px;height:40px;background:#FF3B30;color:#fff;z-index:99;display:none;align-items:center;justify-content:space-between;padding:0 16px;cursor:pointer;box-shadow:0 4px 14px rgba(255,59,48,.35);animation:fu .2s ease}
 #activeWorkoutBar.on{display:flex}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:livePulse 1.2s infinite ease-in-out}
 @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
@@ -59,22 +59,22 @@ svg{display:block;flex-shrink:0}
 .M{font-family:var(--mono);letter-spacing:.01em}
 .L{font-size:.65rem;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.38)}
 #app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
-#hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--HDR);background:var(--gh);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+#hdr{position:fixed;top:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;height:var(--HDR);background:var(--gh);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
 .hdr-logo{font-family:var(--disp);font-size:1.5rem;letter-spacing:3px}
 .streak-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border:1px solid var(--b2);border-radius:99px;padding:4px 12px}
 .streak-pill span{font-family:var(--mono);font-size:.74rem}
 .hdr-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45)}
-#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px)}
+#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px);touch-action:pan-y;-webkit-overflow-scrolling:touch}
 .page{display:none;animation:fu .2s ease both}
 .page.active{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--NAV);background:var(--gn);backdrop-filter:blur(28px);border-top:1px solid var(--b1);z-index:100;display:flex;align-items:center}
+#nav{position:fixed;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;height:var(--NAV);background:var(--gn);backdrop-filter:blur(28px);border-top:1px solid var(--b1);z-index:100;display:flex;align-items:center;justify-content:space-around;padding:0 4px}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .15s;padding:4px 2px}
 .nb svg{width:18px;height:18px;color:rgba(255,255,255,.26);transition:color .15s}
 .nb span{font-size:.59rem;font-weight:500;color:rgba(255,255,255,.26);transition:color .15s}
-.nb .ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background .15s}
-.nb.on .ico{background:rgba(255,255,255,.11)}
-.nb.on svg,.nb.on span{color:#fff}
+.nb .ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background .15s, border-color .15s;border:1px solid transparent}
+
+
 .sp{padding:16px}.sp+.sp{padding-top:0}
 .row{display:flex;align-items:center}.between{display:flex;align-items:center;justify-content:space-between}
 .g2{gap:8px}.g3{gap:12px}.g4{gap:4px}
@@ -134,14 +134,14 @@ select.ifield{cursor:pointer}
 .sh-body{padding:14px 18px}
 
 /* ── FULLSCREEN ── */
-.fullscreen{position:fixed;inset:0;z-index:150;background:#080808;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.fullscreen{position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;z-index:150;background:#080808;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .fullscreen.on{transform:translateY(0);pointer-events:all}
 .fs-hdr{height:var(--HDR);background:var(--gh);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
 .fs-body{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
 .fs-footer{padding:10px 14px 22px;border-top:1px solid var(--b1);flex-shrink:0}
 
 /* ── REST TIMER ── */
-#restScreen{position:fixed;inset:0;z-index:250;background:rgba(8,8,8,.94);backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;pointer-events:none;transition:opacity .2s}
+#restScreen{position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;width:100%;max-width:430px;z-index:250;background:rgba(8,8,8,.94);backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;pointer-events:none;transition:opacity .2s}
 #restScreen.on{opacity:1;pointer-events:all}
 
 /* ── HEATMAP ── */
@@ -1351,7 +1351,7 @@ function deleteTemplate(id){
   rTemplates();
 }
 
-function startTodayWk(){const dow=new Date().toLocaleDateString('en-US',{weekday:'long'});const wk=S.workouts.find(w=>w.weekday===dow);if(wk)startWorkout(wk.id);else goPage('training')}
+function startTodayWk(){const dow=new Date().toLocaleDateString('en-US',{weekday:'long'});const wk=S.workouts.find(w=>w.weekday===dow);if(wk&&wk.id){startWorkout(wk.id)}else{toast('No workout set for '+dow+' — choose one below');goPage('training')}}
 
 let elTarget=null,elCat='All',selExSt=null,pickMode='new',pickTarget=null,pickExercises=[];
 function openExLibFor(dayId){
@@ -1474,6 +1474,38 @@ function openCxFromExplore(){wsCustomMode=false;exploreMode=true;cxPhB64='';clea
 function clearCxForm(){const n=document.getElementById('cxName');if(n)n.value='';const p=document.getElementById('cxPhotoPreview');if(p){p.src='';p.style.display='none'}const ph=document.getElementById('cxPhotoPh');if(ph)ph.style.display='';const i=document.getElementById('cxPhotoIn');if(i)i.value=''}
 async function prevCxPhoto(e){const f=e.target.files[0];if(!f)return;cxPhB64=await compressImg(f,500);document.getElementById('cxPhotoPreview').src=cxPhB64;document.getElementById('cxPhotoPreview').style.display='block';document.getElementById('cxPhotoPh').style.display='none'}
 function saveCustomEx(){const name=document.getElementById('cxName').value.trim();if(!name){toast('Enter exercise name');return}const muscle=document.getElementById('cxMuscle').value;S.customEx.push({id:uid(),name,muscle,label:mlbl(muscle),photo:cxPhB64||null});sv('customEx');closeModal('mCustomEx');if(wsCustomMode)filterWsEx();else if(exploreMode)rExplore();else filterExLib();toast(name+' added to library!')}
+
+function saveActiveSessionDraft(){
+  try{
+    if(!wsDay){localStorage.removeItem('sk3_activeSession');return}
+    var draft={dayId:wsDay.id,wsDone:wsDone||[],wsVol:wsVol||0,wsStart:wsStart||Date.now()};
+    localStorage.setItem('sk3_activeSession',JSON.stringify(draft));
+  }catch(e){}
+}
+function clearActiveSessionDraft(){
+  try{localStorage.removeItem('sk3_activeSession')}catch(e){}
+}
+function checkActiveSessionRecovery(){
+  try{
+    var raw=localStorage.getItem('sk3_activeSession');
+    if(!raw)return;
+    var d=JSON.parse(raw);
+    if(d&&d.dayId){
+      var day=S.workouts.find(function(w){return w.id===d.dayId});
+      if(day){
+        wsDay=day;wsDone=d.wsDone||[];wsVol=d.wsVol||0;wsStart=d.wsStart||Date.now();
+        document.getElementById('wsTitle').textContent=wsDay.name.toUpperCase();
+        document.getElementById('activeWorkoutBar').classList.add('on');
+        clearInterval(wsElT);
+        wsElT=setInterval(function(){
+          var el=Math.floor((Date.now()-wsStart)/1000);
+          document.getElementById('wsElapsed').textContent=fmtS(el);
+          document.getElementById('barElapsed').textContent=fmtS(el);
+        },1000);
+      }
+    }
+  }catch(e){}
+}
 
 function startWorkout(dayId){
   wsDay = S.workouts.find(d => d.id === dayId);
@@ -2357,30 +2389,72 @@ function resetAll(){if(!confirm('Reset ALL data? This cannot be undone.'))return
 
 
 // ── SWIPE NAVIGATION ──
+// ── ROBUST SWIPE NAVIGATION (Mobile Touch + Desktop Drag) ──
 (function(){
-  var TAB = ['dashboard','training','nutrition','progress','log'];
-  var px = 0, py = 0, dragging = false;
+  var TABS = ['dashboard','training','nutrition','progress','log'];
+  var sX = 0, sY = 0, sTime = 0, isTouch = false;
 
-  window.addEventListener('pointerdown', function(e){
-    if(e.pointerType === 'mouse' && e.button !== 0) return;
-    px = e.clientX; py = e.clientY; dragging = true;
-  });
+  // Touch listener (capture: true ensures it intercepts before children)
+  window.addEventListener('touchstart', function(e){
+    if(!e.touches || e.touches.length !== 1) return;
+    sX = e.touches[0].clientX;
+    sY = e.touches[0].clientY;
+    sTime = Date.now();
+    isTouch = true;
+  }, { capture: true, passive: true });
 
-  window.addEventListener('pointerup', function(e){
-    if(!dragging) return;
-    dragging = false;
-    if(document.querySelector('.overlay.on,.fullscreen.on')) return;
-    var dx = e.clientX - px;
-    var dy = e.clientY - py;
-    if(Math.abs(dx) < 50) return;
-    if(Math.abs(dy) > Math.abs(dx)) return;
-    var i = TAB.indexOf(page);
-    if(i < 0) return;
-    if(dx < 0 && i < TAB.length-1) goPage(TAB[i+1]);
-    if(dx > 0 && i > 0) goPage(TAB[i-1]);
-  });
+  window.addEventListener('touchend', function(e){
+    if(!isTouch) return;
+    isTouch = false;
+    if(!e.changedTouches || e.changedTouches.length === 0) return;
+    if(document.querySelector('.overlay.on, .fullscreen.on')) return;
 
-  window.addEventListener('pointercancel', function(){ dragging = false; });
+    var dx = e.changedTouches[0].clientX - sX;
+    var dy = e.changedTouches[0].clientY - sY;
+    var dt = Date.now() - sTime;
+
+    // Swipe criteria: >= 35px horizontal, clearly horizontal (dx > dy * 1.15), under 800ms
+    if(Math.abs(dx) >= 35 && Math.abs(dx) > Math.abs(dy) * 1.15 && dt < 800){
+      var cur = TABS.indexOf(page);
+      if(cur < 0) return;
+      if(dx < 0 && cur < TABS.length - 1){
+        goPage(TABS[cur + 1]);
+      } else if(dx > 0 && cur > 0){
+        goPage(TABS[cur - 1]);
+      }
+    }
+  }, { capture: true, passive: true });
+
+  // Mouse drag support for laptop/desktop
+  var mDown = false, mX = 0, mY = 0, mT = 0;
+  window.addEventListener('mousedown', function(e){
+    if(e.button !== 0) return;
+    if(e.target.closest('input, select, textarea, button, a, canvas')) return;
+    mDown = true;
+    mX = e.clientX;
+    mY = e.clientY;
+    mT = Date.now();
+  }, { capture: true });
+
+  window.addEventListener('mouseup', function(e){
+    if(!mDown) return;
+    mDown = false;
+    if(document.querySelector('.overlay.on, .fullscreen.on')) return;
+
+    var dx = e.clientX - mX;
+    var dy = e.clientY - mY;
+    var dt = Date.now() - mT;
+
+    if(Math.abs(dx) >= 35 && Math.abs(dx) > Math.abs(dy) * 1.15 && dt < 800){
+      var cur = TABS.indexOf(page);
+      if(cur < 0) return;
+      if(dx < 0 && cur < TABS.length - 1){
+        goPage(TABS[cur + 1]);
+      } else if(dx > 0 && cur > 0){
+        goPage(TABS[cur - 1]);
+      }
+    }
+  }, { capture: true });
 })();
 
 function init(){
