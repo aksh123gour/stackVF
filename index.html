@@ -58,13 +58,13 @@ svg{display:block;flex-shrink:0}
 .D{font-family:var(--disp);line-height:1;letter-spacing:.02em}
 .M{font-family:var(--mono);letter-spacing:.01em}
 .L{font-size:.65rem;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.38)}
-#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;touch-action:pan-y}
 #hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--HDR);background:var(--gh);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
 .hdr-logo{font-family:var(--disp);font-size:1.5rem;letter-spacing:3px}
 .streak-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border:1px solid var(--b2);border-radius:99px;padding:4px 12px}
 .streak-pill span{font-family:var(--mono);font-size:.74rem}
 .hdr-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45)}
-#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px);-webkit-overflow-scrolling:touch}
+#scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-top:var(--HDR);padding-bottom:calc(var(--NAV) + 40px);touch-action:pan-y}
 .page{display:none;animation:fu .2s ease both}
 .page.active{display:block}
 @keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -2360,23 +2360,26 @@ function resetAll(){if(!confirm('Reset ALL data? This cannot be undone.'))return
 const PAGES = ['dashboard', 'training', 'nutrition', 'progress', 'log'];
 
 function initSwipeNavigation(){
+  const el = document.getElementById('scroll');
+  if(!el) return;
   let sx = 0, sy = 0, st = 0;
 
-  document.addEventListener('touchstart', e => {
+  // touchstart on #scroll — which has touch-action:pan-y so browser
+  // only intercepts vertical scroll; horizontal swipes come to JS
+  el.addEventListener('touchstart', e => {
     if(e.touches.length !== 1) return;
     sx = e.touches[0].clientX;
     sy = e.touches[0].clientY;
     st = Date.now();
   }, {passive:true});
 
-  document.addEventListener('touchend', e => {
+  el.addEventListener('touchend', e => {
     if(e.changedTouches.length !== 1) return;
     if(document.querySelector('.overlay.on, .fullscreen.on')) return;
     const dx = e.changedTouches[0].clientX - sx;
     const dy = e.changedTouches[0].clientY - sy;
     const dt = Date.now() - st;
-    // 40px+ horizontal, horizontal must dominate vertical by 1.3x, under 600ms
-    if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.3 || dt > 600) return;
+    if(Math.abs(dx) < 35 || Math.abs(dx) < Math.abs(dy) * 1.2 || dt > 700) return;
     const idx = PAGES.indexOf(page);
     if(idx === -1) return;
     if(dx < 0 && idx < PAGES.length - 1) goPage(PAGES[idx + 1]);
