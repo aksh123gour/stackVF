@@ -743,9 +743,61 @@ select.ifield{cursor:pointer}
         <button class="btn-g f1 btn-sm" onclick="restoreFromGoogle()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Restore</button>
       </div>
       <p class="L" id="googleSyncStatus" style="font-size:.56rem;color:rgba(255,255,255,.32)">Enter your Apps Script URL above to sync</p>
+      <button class="btn-g btn-sm btn-full mt2" onclick="openGoogleHubModal()" style="font-size:.68rem;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:6px;border-color:rgba(255,59,48,.35);color:#fff">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Setup Google Sheets Hub & Copy Code
+      </button>
     </div>
     <div class="hr" style="margin:14px 0"></div>
     <div class="between" style="padding:11px 0"><div><p style="font-size:.84rem;font-weight:500">Reset all data</p><p class="L" style="font-size:.58rem;margin-top:2px">Cannot be undone</p></div><button class="btn-danger btn-sm" onclick="resetAll()">Reset</button></div>
+  </div>
+</div></div>
+
+<!-- GOOGLE SHEETS DATA HUB MODAL -->
+<div class="overlay" id="mGoogleHub"><div class="sheet"><div class="sh-handle"></div>
+  <div class="sh-hdr"><span class="sh-title">GOOGLE SHEETS DATA HUB</span><button class="sh-close" onclick="closeModal('mGoogleHub')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="sh-body">
+    <div class="card mb3" style="background:linear-gradient(135deg,rgba(255,59,48,.12),rgba(0,0,0,.6));border-color:rgba(255,59,48,.35)">
+      <p style="font-size:.92rem;font-weight:600;margin-bottom:4px">Master Telemetry & Analytics Hub</p>
+      <p class="L" style="font-size:.62rem;line-height:1.4">Connect your private Google Sheet as the central data engine. Every sync automatically builds and updates executive KPI tiles, PR & 1RM tracking, volume heatmaps, granular set telemetry, and embedded charts.</p>
+    </div>
+
+    <div class="card mb3">
+      <span class="L" style="display:block;margin-bottom:8px;color:#FF3B30">Generated Automatically on Every Sync:</span>
+      <div style="font-size:.68rem;line-height:1.6;color:rgba(255,255,255,.82)">
+        <div>🏆 <b>PR & Strength Progress</b> — All-time PRs, rep counts, and Brzycki 1RM progression.</div>
+        <div>📈 <b>Executive Hub</b> — Performance KPI tiles with automated Volume & Bodyweight charts.</div>
+        <div>🏋️ <b>Workouts Log</b> — Complete session log with 3-color Volume gradient heatmaps.</div>
+        <div>📊 <b>Sets & Reps Detail</b> — Granular set-by-set telemetry for custom analytics & pivot tables.</div>
+        <div>📅 <b>Consistency Heatmap</b> — Color-coded calendar matrix for training & nutrition habits.</div>
+        <div>🥗 <b>Nutrition & Hydration</b> — Daily calorie, protein, macro, and water compliance logs.</div>
+        <div>⚖️ <b>Bodyweight & Composition</b> — Weight trendline with 7-day moving averages.</div>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <span class="L" style="display:block;margin-bottom:8px">1-Minute Setup Guide:</span>
+      <ol style="font-size:.68rem;line-height:1.6;padding-left:18px;margin:0;color:rgba(255,255,255,.75)">
+        <li>Create a new spreadsheet at <a href="https://sheets.new" target="_blank" style="color:#FF3B30;text-decoration:underline">sheets.new</a> (e.g. named <i>STACK Fitness Hub</i>).</li>
+        <li>In Google Sheets, click <b>Extensions → Apps Script</b>.</li>
+        <li>Delete any existing code in <code>Code.gs</code>.</li>
+        <li>Click <b>Copy Apps Script Code</b> below and paste it into Google Apps Script. Click Save.</li>
+        <li>Click <b>Deploy → New deployment</b> → choose <b>Web app</b>.</li>
+        <li>Set <i>Execute as</i>: <b>Me</b>, and <i>Who has access</i>: <b>Anyone</b>.</li>
+        <li>Click <b>Deploy</b>, approve Google permissions, and copy the <b>Web app URL</b> (ends in <code>/exec</code>).</li>
+        <li>Paste the URL into STACK Settings and tap <b>Sync Now</b>!</li>
+      </ol>
+    </div>
+
+    <div class="ig mb3">
+      <div class="between mb1">
+        <label class="ilbl">Google Apps Script Code (V2.0 Master Hub)</label>
+        <button class="btn-p btn-xs" onclick="copyGasScript()" style="padding:4px 10px">Copy Code</button>
+      </div>
+      <textarea id="gasScriptArea" class="ifield" readonly style="height:120px;font-family:var(--font-mono);font-size:.56rem;line-height:1.3;white-space:pre;opacity:.85" onclick="this.select()"></textarea>
+    </div>
+
+    <button class="btn-p btn-full" onclick="copyGasScript()">Copy Code & Back to Settings</button>
   </div>
 </div></div>
 
@@ -2445,6 +2497,48 @@ async function syncToGoogle(silent = false){
     }
   } catch(err){
     if(!silent) toast('Sync failed · Check URL');
+  }
+}
+
+function openGoogleHubModal(){
+  const ta = document.getElementById('gasScriptArea');
+  if(ta && !ta.value){
+    fetch('google-apps-script.js')
+      .then(r => r.text())
+      .then(t => { ta.value = t; })
+      .catch(() => {});
+  }
+  openModal('mGoogleHub');
+}
+
+function copyGasScript(){
+  const ta = document.getElementById('gasScriptArea');
+  const doCopy = (code) => {
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(() => {
+        toast('Apps Script code copied to clipboard!');
+        closeModal('mGoogleHub');
+      }).catch(() => {
+        if(ta){ ta.value = code; ta.select(); document.execCommand('copy'); }
+        toast('Apps Script code copied!');
+        closeModal('mGoogleHub');
+      });
+    } else {
+      if(ta){ ta.value = code; ta.select(); document.execCommand('copy'); }
+      toast('Apps Script code copied!');
+      closeModal('mGoogleHub');
+    }
+  };
+
+  if(ta && ta.value){
+    doCopy(ta.value);
+  } else {
+    fetch('google-apps-script.js')
+      .then(r => r.text())
+      .then(t => doCopy(t))
+      .catch(() => {
+        toast('Unable to load script file');
+      });
   }
 }
 
