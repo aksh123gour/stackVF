@@ -436,61 +436,7 @@ select.ifield{cursor:pointer}
 <!-- LOG -->
 <div class="page" id="pg-log">
 <div class="sp" style="padding-bottom:20px"><div class="between"><h1 class="D" style="font-size:2.2rem">LOG</h1><div class="row g2"><button class="btn-g btn-sm" onclick="exportData()">Export</button><button class="btn-g btn-sm" onclick="document.getElementById('importIn').click()">Import</button></div>
-    <div class="hr" style="margin:14px 0"></div>
-
-    <!-- PWA REAL NOTIFICATIONS & REMINDERS -->
-    <div style="margin-bottom:12px">
-      <div class="between mb2">
-        <div>
-          <p style="font-size:.84rem;font-weight:600;letter-spacing:.02em">Reminders & Notifications</p>
-          <p class="L" id="notifStatusLbl" style="font-size:.56rem;margin-top:2px">Morning workout & protein shake alerts</p>
-        </div>
-        <button class="btn-p btn-sm" id="notifEnableBtn" onclick="toggleNotificationSetting()" style="font-size:.65rem;padding:6px 12px">Enable</button>
-      </div>
-
-      <div id="notifSettingsPanel" style="display:none;background:rgba(255,255,255,.02);border:1px solid var(--b1);border-radius:12px;padding:12px 14px">
-        <!-- Morning workout alert -->
-        <div class="between mb2" style="align-items:center">
-          <div>
-            <p style="font-size:.76rem;font-weight:500">Morning Workout Alert</p>
-            <p class="L" style="font-size:.54rem">Tells you today's routine (e.g. Leg Day)</p>
-          </div>
-          <input type="time" class="ifield" id="stNotifMorning" style="width:105px;padding:4px 8px;font-size:.75rem" value="08:00" onchange="saveNotifTime('morningTime', this.value)">
-        </div>
-
-        <!-- Afternoon Protein shake check -->
-        <div class="between mb2" style="align-items:center">
-          <div>
-            <p style="font-size:.76rem;font-weight:500">Mid-Day Protein Check</p>
-            <p class="L" style="font-size:.54rem">Calculates remaining protein needed</p>
-          </div>
-          <input type="time" class="ifield" id="stNotifProtein" style="width:105px;padding:4px 8px;font-size:.75rem" value="14:00" onchange="saveNotifTime('proteinTime', this.value)">
-        </div>
-
-        <!-- Evening Protein Reminder -->
-        <div class="between mb2" style="align-items:center">
-          <div>
-            <p style="font-size:.76rem;font-weight:500">Evening Protein & Dinner</p>
-            <p class="L" style="font-size:.54rem">Last check to hit daily protein goal</p>
-          </div>
-          <input type="time" class="ifield" id="stNotifEvening" style="width:105px;padding:4px 8px;font-size:.75rem" value="19:30" onchange="saveNotifTime('eveningTime', this.value)">
-        </div>
-
-        <!-- Evening Streak Guard -->
-        <div class="between mb3" style="align-items:center">
-          <div>
-            <p style="font-size:.76rem;font-weight:500">Streak Protection Guard</p>
-            <p class="L" style="font-size:.54rem">Alerts before midnight if not logged</p>
-          </div>
-          <input type="time" class="ifield" id="stNotifStreak" style="width:105px;padding:4px 8px;font-size:.75rem" value="21:00" onchange="saveNotifTime('streakTime', this.value)">
-        </div>
-
-        <button class="btn-g btn-sm btn-full" onclick="testNotificationAlert()" style="font-size:.68rem;padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:6px">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          Send Test Notification Now
-        </button>
-      </div>
-    </div></div></div>
+    </div></div>
 <div class="sp"><div class="timeline" id="logTimeline"></div></div>
 </div><!-- /scroll -->
 
@@ -781,6 +727,61 @@ select.ifield{cursor:pointer}
     <div class="between" style="padding:11px 0;border-bottom:1px solid var(--b1)"><div><p style="font-size:.84rem;font-weight:500">Fuel library</p><p class="L" style="font-size:.58rem;margin-top:2px">Browse, edit or remove foods</p></div><button class="btn-g btn-sm" onclick="openFoodExplore()">Explore</button></div>
     <div class="between" style="padding:11px 0;border-bottom:1px solid var(--b1)"><div><p style="font-size:.84rem;font-weight:500">Export data</p><p class="L" style="font-size:.58rem;margin-top:2px">Download JSON backup</p></div><button class="btn-g btn-sm" onclick="exportData()">Export</button></div>
     <div class="between" style="padding:11px 0;border-bottom:1px solid var(--b1)"><div><p style="font-size:.84rem;font-weight:500">Import data</p><p class="L" style="font-size:.58rem;margin-top:2px">Restore from backup</p></div><button class="btn-g btn-sm" onclick="document.getElementById('importIn').click()">Import</button></div>
+
+    <!-- PWA REAL NOTIFICATIONS & REMINDERS -->
+    <div class="hr" style="margin:14px 0"></div>
+    <div style="margin-bottom:12px">
+      <div class="between mb2">
+        <div>
+          <p style="font-size:.84rem;font-weight:600;letter-spacing:.02em">Reminders & Notifications</p>
+          <p class="L" id="notifStatusLbl" style="font-size:.56rem;margin-top:2px">Morning workout & protein shake alerts</p>
+        </div>
+        <button class="btn-p btn-sm" id="notifEnableBtn" onclick="toggleNotificationSetting()" style="font-size:.65rem;padding:6px 14px">Enable</button>
+      </div>
+
+      <div id="notifSettingsPanel" style="display:none;background:rgba(255,255,255,.02);border:1px solid var(--b1);border-radius:12px;padding:12px 14px;margin-top:10px">
+        <!-- Morning workout alert -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Morning Workout Alert</p>
+            <p class="L" style="font-size:.54rem">Tells you today's routine (e.g. Leg Day)</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifMorning" style="width:105px;padding:4px 8px;font-size:.75rem" value="08:00" onchange="saveNotifTime('morningTime', this.value)">
+        </div>
+
+        <!-- Afternoon Protein shake check -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Mid-Day Protein Check</p>
+            <p class="L" style="font-size:.54rem">Calculates remaining protein needed</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifProtein" style="width:105px;padding:4px 8px;font-size:.75rem" value="14:00" onchange="saveNotifTime('proteinTime', this.value)">
+        </div>
+
+        <!-- Evening Protein Reminder -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Evening Protein & Dinner</p>
+            <p class="L" style="font-size:.54rem">Last check to hit daily protein goal</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifEvening" style="width:105px;padding:4px 8px;font-size:.75rem" value="19:30" onchange="saveNotifTime('eveningTime', this.value)">
+        </div>
+
+        <!-- Evening Streak Guard -->
+        <div class="between mb3" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Streak Protection Guard</p>
+            <p class="L" style="font-size:.54rem">Alerts before midnight if not logged</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifStreak" style="width:105px;padding:4px 8px;font-size:.75rem" value="21:00" onchange="saveNotifTime('streakTime', this.value)">
+        </div>
+
+        <button class="btn-g btn-sm btn-full" onclick="testNotificationAlert()" style="font-size:.68rem;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Send Test Notification Now
+        </button>
+      </div>
+    </div>
     <div class="hr" style="margin:14px 0"></div>
     <div style="margin-bottom:12px">
       <div class="between mb2">
@@ -2610,10 +2611,15 @@ async function sendRealNotification(title, options = {}){
   if(!('Notification' in window)) return false;
   if(Notification.permission !== 'granted') return false;
 
+  const baseUrl = window.location.href.split('#')[0].split('?')[0];
+  const toAbs = (rel) => new URL(rel, baseUrl).href;
+
   const defOpts = Object.assign({
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    vibrate: [200, 100, 200]
+    icon: toAbs('icon-192.png'),
+    badge: toAbs('badge-96.png'),
+    vibrate: [200, 100, 200],
+    tag: 'stack-alert',
+    renotify: true
   }, options);
 
   try {
