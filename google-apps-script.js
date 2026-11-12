@@ -100,6 +100,16 @@ function doPost(e) {
     // 8. Executive Overview Dashboard & Visual Charts
     updateExecutiveDashboard(ss, state);
     
+    // 9. Clean up default empty "Sheet1" and focus on Executive Hub
+    const defaultSheet = ss.getSheetByName('Sheet1') || ss.getSheetByName('Sheet 1');
+    if (defaultSheet && ss.getSheets().length > 1) {
+      try { ss.deleteSheet(defaultSheet); } catch(e){}
+    }
+    const hub = ss.getSheetByName('Executive Hub');
+    if (hub) {
+      try { ss.setActiveSheet(hub); } catch(e){}
+    }
+    
     return jsonResponse({
       status: 'success',
       updatedAt: nowStr,
@@ -233,7 +243,11 @@ function updatePRsSheet(ss, state) {
     return bVal - aVal;
   });
   
-  if (rows.length > 0) {
+  if (rows.length === 0) {
+    sheet.getRange(4, 1, 1, headers.length).setValues([[
+      'No PRs recorded yet', 'All Muscles', '—', '—', '—', '—', 0, 0
+    ]]).setFontColor('#94A3B8').setFontStyle('italic');
+  } else {
     sheet.getRange(4, 1, rows.length, headers.length).setValues(rows);
     
     // Style numbers
@@ -298,6 +312,9 @@ function updateWorkoutsLogSheet(ss, state) {
   
   const sessions = state.sessions || [];
   if (!sessions.length) {
+    sheet.getRange(3, 1, 1, headers.length).setValues([[
+      '—', '—', 'NO SESSIONS YET', 0, 0, 0, 0, 0, 'Complete your first workout in STACK to see your automated log & volume heatmap!'
+    ]]).setFontColor('#94A3B8').setFontStyle('italic');
     sheet.autoResizeColumns(1, headers.length);
     return;
   }
@@ -428,7 +445,11 @@ function updateSetsDetailSheet(ss, state) {
     });
   });
   
-  if (rows.length > 0) {
+  if (rows.length === 0) {
+    sheet.getRange(3, 1, 1, headers.length).setValues([[
+      '—', '—', 'No sets logged yet', '—', '—', 0, 0, 0, '—'
+    ]]).setFontColor('#94A3B8').setFontStyle('italic');
+  } else {
     sheet.getRange(3, 1, rows.length, headers.length).setValues(rows);
     sheet.getRange(3, 6, rows.length, 1).setNumberFormat('#,##0.0 "kg"');
     sheet.getRange(3, 8, rows.length, 1).setNumberFormat('#,##0 "kg"');
@@ -599,6 +620,9 @@ function updateNutritionSheet(ss, state) {
   
   const dates = Object.keys(mealsMap).sort().reverse();
   if (!dates.length) {
+    sheet.getRange(3, 1, 1, headers.length).setValues([[
+      '—', 0, calGoal, 0, 0, 0, 0, '0.00 L', 0
+    ]]).setFontColor('#94A3B8').setFontStyle('italic');
     sheet.autoResizeColumns(1, headers.length);
     return;
   }
@@ -676,6 +700,9 @@ function updateBodyweightSheet(ss, state) {
   
   const bwList = (state.bodyweight || []).slice().sort((a,b) => (a.date || '').localeCompare(b.date || ''));
   if (!bwList.length) {
+    sheet.getRange(3, 1, 1, headers.length).setValues([[
+      '—', 0, 0, 0
+    ]]).setFontColor('#94A3B8').setFontStyle('italic');
     sheet.autoResizeColumns(1, headers.length);
     return;
   }

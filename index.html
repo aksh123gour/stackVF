@@ -435,7 +435,62 @@ select.ifield{cursor:pointer}
 
 <!-- LOG -->
 <div class="page" id="pg-log">
-<div class="sp" style="padding-bottom:20px"><div class="between"><h1 class="D" style="font-size:2.2rem">LOG</h1><div class="row g2"><button class="btn-g btn-sm" onclick="exportData()">Export</button><button class="btn-g btn-sm" onclick="document.getElementById('importIn').click()">Import</button></div></div></div>
+<div class="sp" style="padding-bottom:20px"><div class="between"><h1 class="D" style="font-size:2.2rem">LOG</h1><div class="row g2"><button class="btn-g btn-sm" onclick="exportData()">Export</button><button class="btn-g btn-sm" onclick="document.getElementById('importIn').click()">Import</button></div>
+    <div class="hr" style="margin:14px 0"></div>
+
+    <!-- PWA REAL NOTIFICATIONS & REMINDERS -->
+    <div style="margin-bottom:12px">
+      <div class="between mb2">
+        <div>
+          <p style="font-size:.84rem;font-weight:600;letter-spacing:.02em">Reminders & Notifications</p>
+          <p class="L" id="notifStatusLbl" style="font-size:.56rem;margin-top:2px">Morning workout & protein shake alerts</p>
+        </div>
+        <button class="btn-p btn-sm" id="notifEnableBtn" onclick="toggleNotificationSetting()" style="font-size:.65rem;padding:6px 12px">Enable</button>
+      </div>
+
+      <div id="notifSettingsPanel" style="display:none;background:rgba(255,255,255,.02);border:1px solid var(--b1);border-radius:12px;padding:12px 14px">
+        <!-- Morning workout alert -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Morning Workout Alert</p>
+            <p class="L" style="font-size:.54rem">Tells you today's routine (e.g. Leg Day)</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifMorning" style="width:105px;padding:4px 8px;font-size:.75rem" value="08:00" onchange="saveNotifTime('morningTime', this.value)">
+        </div>
+
+        <!-- Afternoon Protein shake check -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Mid-Day Protein Check</p>
+            <p class="L" style="font-size:.54rem">Calculates remaining protein needed</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifProtein" style="width:105px;padding:4px 8px;font-size:.75rem" value="14:00" onchange="saveNotifTime('proteinTime', this.value)">
+        </div>
+
+        <!-- Evening Protein Reminder -->
+        <div class="between mb2" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Evening Protein & Dinner</p>
+            <p class="L" style="font-size:.54rem">Last check to hit daily protein goal</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifEvening" style="width:105px;padding:4px 8px;font-size:.75rem" value="19:30" onchange="saveNotifTime('eveningTime', this.value)">
+        </div>
+
+        <!-- Evening Streak Guard -->
+        <div class="between mb3" style="align-items:center">
+          <div>
+            <p style="font-size:.76rem;font-weight:500">Streak Protection Guard</p>
+            <p class="L" style="font-size:.54rem">Alerts before midnight if not logged</p>
+          </div>
+          <input type="time" class="ifield" id="stNotifStreak" style="width:105px;padding:4px 8px;font-size:.75rem" value="21:00" onchange="saveNotifTime('streakTime', this.value)">
+        </div>
+
+        <button class="btn-g btn-sm btn-full" onclick="testNotificationAlert()" style="font-size:.68rem;padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Send Test Notification Now
+        </button>
+      </div>
+    </div></div></div>
 <div class="sp"><div class="timeline" id="logTimeline"></div></div>
 </div><!-- /scroll -->
 
@@ -2442,6 +2497,249 @@ function deleteSession(idx){
 
 
 // ── SETTINGS & GOOGLE CLOUD SYNC ──
+
+// ── REAL PWA NOTIFICATIONS & REMINDERS ENGINE ──
+function initNotifDefaults(){
+  if(!S.settings.notifs){
+    S.settings.notifs = {
+      enabled: false,
+      morningTime: '08:00',
+      proteinTime: '14:00',
+      eveningTime: '19:30',
+      streakTime: '21:00'
+    };
+  }
+}
+
+function updNotifUI(){
+  initNotifDefaults();
+  const n = S.settings.notifs;
+  const btn = document.getElementById('notifEnableBtn');
+  const panel = document.getElementById('notifSettingsPanel');
+  const lbl = document.getElementById('notifStatusLbl');
+  if(!btn || !panel || !lbl) return;
+
+  const hasPerm = ('Notification' in window) && (Notification.permission === 'granted');
+  const isDenied = ('Notification' in window) && (Notification.permission === 'denied');
+
+  if(isDenied){
+    lbl.textContent = 'Notifications blocked in browser permissions';
+    lbl.style.color = '#EF4444';
+    btn.textContent = 'Blocked';
+    btn.className = 'btn-g btn-sm';
+    btn.disabled = true;
+    panel.style.display = 'none';
+    return;
+  }
+
+  btn.disabled = false;
+  if(n.enabled && hasPerm){
+    lbl.innerHTML = '<span style="color:#22C55E">●</span> Active · Morning & protein alerts scheduled';
+    lbl.style.color = 'rgba(255,255,255,.6)';
+    btn.textContent = 'Disable';
+    btn.className = 'btn-g btn-sm';
+    panel.style.display = 'block';
+
+    const f = (id, v) => { const el = document.getElementById(id); if(el && v) el.value = v; };
+    f('stNotifMorning', n.morningTime || '08:00');
+    f('stNotifProtein', n.proteinTime || '14:00');
+    f('stNotifEvening', n.eveningTime || '19:30');
+    f('stNotifStreak', n.streakTime || '21:00');
+  } else {
+    lbl.textContent = 'Morning workout & protein shake alerts';
+    lbl.style.color = 'rgba(255,255,255,.32)';
+    btn.textContent = 'Enable';
+    btn.className = 'btn-p btn-sm';
+    panel.style.display = 'none';
+  }
+}
+
+async function toggleNotificationSetting(){
+  initNotifDefaults();
+  const n = S.settings.notifs;
+  if(!('Notification' in window)){
+    toast('Notifications not supported in this browser');
+    return;
+  }
+
+  if(n.enabled && Notification.permission === 'granted'){
+    n.enabled = false;
+    sv('settings');
+    updNotifUI();
+    toast('Reminders turned off');
+    return;
+  }
+
+  if(Notification.permission === 'granted'){
+    n.enabled = true;
+    sv('settings');
+    updNotifUI();
+    toast('Notifications enabled!');
+    sendRealNotification('⚡ STACK Notifications Active', {
+      body: 'Morning workout reminders and protein targets are now live!'
+    });
+    return;
+  }
+
+  try {
+    const res = await Notification.requestPermission();
+    if(res === 'granted'){
+      n.enabled = true;
+      sv('settings');
+      updNotifUI();
+      toast('Notifications enabled!');
+      sendRealNotification('⚡ STACK Notifications Active', {
+        body: 'Morning workout reminders and protein targets are now live!'
+      });
+    } else if(res === 'denied'){
+      toast('Permission blocked. Allow notifications in browser site settings.');
+      updNotifUI();
+    }
+  } catch(e){
+    toast('Could not request notification permission');
+  }
+}
+
+function saveNotifTime(key, val){
+  initNotifDefaults();
+  S.settings.notifs[key] = val;
+  sv('settings');
+}
+
+async function sendRealNotification(title, options = {}){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission !== 'granted') return false;
+
+  const defOpts = Object.assign({
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    vibrate: [200, 100, 200]
+  }, options);
+
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if(reg && reg.showNotification){
+      await reg.showNotification(title, defOpts);
+      return true;
+    }
+  } catch(e){}
+
+  try {
+    new Notification(title, defOpts);
+    return true;
+  } catch(e){
+    return false;
+  }
+}
+
+async function testNotificationAlert(){
+  const todayStr = td();
+  const meals = S.meals[todayStr] || [];
+  const loggedProt = meals.reduce((sum, m) => sum + (Number(m.prot) || 0), 0);
+  const targetProt = S.settings.protGoal || 150;
+  const remaining = Math.max(0, targetProt - Math.round(loggedProt));
+
+  const dow = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const wk = S.workouts.find(w => w.weekday === dow);
+  const wkText = wk ? (wk.name.toUpperCase() + ' (' + wk.muscles.map(m=>mlbl(m)).join(', ') + ')') : 'Rest & Recovery Day';
+
+  const sent = await sendRealNotification('⚡ STACK Reminder Preview', {
+    body: 'Today: ' + wkText + ' · Protein: ' + remaining + 'g needed to hit ' + targetProt + 'g goal!'
+  });
+
+  if(sent){
+    toast('Test notification sent to device!');
+  } else {
+    toast('Could not send notification · check browser permission');
+  }
+}
+
+function runNotificationScheduler(){
+  initNotifDefaults();
+  const n = S.settings.notifs;
+  if(!n.enabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const curTime = hh + ':' + mm;
+  const todayStr = td();
+
+  let fired = DB.get('sk3_notifFired', {});
+  if(fired.date !== todayStr){
+    fired = { date: todayStr, morning: false, protein: false, evening: false, streak: false };
+  }
+
+  // 1. Morning workout alert
+  const mTime = n.morningTime || '08:00';
+  if(curTime >= mTime && !fired.morning){
+    const dow = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const wk = S.workouts.find(w => w.weekday === dow);
+    if(wk){
+      sendRealNotification('⚡ Morning Workout: ' + wk.name.toUpperCase(), {
+        body: 'Today is your ' + wk.name + ' (' + wk.muscles.map(m=>mlbl(m)).join(', ') + ')! Ready to crush it?'
+      });
+    } else {
+      sendRealNotification('💤 Planned Rest Day', {
+        body: 'Today is for recovery, muscle growth, and nutrition. Give your body rest!'
+      });
+    }
+    fired.morning = true;
+    DB.set('sk3_notifFired', fired);
+  }
+
+  // 2. Mid-day protein check
+  const pTime = n.proteinTime || '14:00';
+  if(curTime >= pTime && !fired.protein){
+    const meals = S.meals[todayStr] || [];
+    const loggedProt = meals.reduce((sum, m) => sum + (Number(m.prot) || 0), 0);
+    const targetProt = S.settings.protGoal || 150;
+    const remaining = Math.max(0, targetProt - Math.round(loggedProt));
+
+    if(remaining > 0){
+      sendRealNotification('🥩 Protein Check: ' + remaining + 'g Remaining', {
+        body: 'You need ' + remaining + 'g more protein to hit your ' + targetProt + 'g daily goal. Time for a protein shake!'
+      });
+    } else {
+      sendRealNotification('🔥 Protein Goal Smashed!', {
+        body: 'Great job! You have already hit your ' + targetProt + 'g protein target today (' + Math.round(loggedProt) + 'g).'
+      });
+    }
+    fired.protein = true;
+    DB.set('sk3_notifFired', fired);
+  }
+
+  // 3. Evening protein check
+  const eTime = n.eveningTime || '19:30';
+  if(curTime >= eTime && !fired.evening){
+    const meals = S.meals[todayStr] || [];
+    const loggedProt = meals.reduce((sum, m) => sum + (Number(m.prot) || 0), 0);
+    const targetProt = S.settings.protGoal || 150;
+    const remaining = Math.max(0, targetProt - Math.round(loggedProt));
+
+    if(remaining > 0){
+      sendRealNotification('🥤 Evening Protein Reminder: ' + remaining + 'g Left', {
+        body: "Don't sleep without hitting your goal! Have a shake or meal to reach " + targetProt + "g protein."
+      });
+    }
+    fired.evening = true;
+    DB.set('sk3_notifFired', fired);
+  }
+
+  // 4. Streak guard
+  const sTime = n.streakTime || '21:00';
+  if(curTime >= sTime && !fired.streak){
+    const cons = S.cons[todayStr] || {};
+    if(!cons.training && !cons.nutrition){
+      sendRealNotification('🛡️ Streak Protection Alert', {
+        body: 'Keep your ' + (S.streak.cur || 0) + '-day streak alive! Log your workouts or meals before midnight.'
+      });
+    }
+    fired.streak = true;
+    DB.set('sk3_notifFired', fired);
+  }
+}
+
 function openSettings(){
   const s = S.settings;
   const f = (id, v) => {
@@ -2463,6 +2761,7 @@ function openSettings(){
   if(statusEl){
     statusEl.textContent = s.lastSync ? 'Last synced: ' + new Date(s.lastSync).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Enter your deployed Google Apps Script URL above';
   }
+  updNotifUI();
   openModal('mSettings');
 }
 
@@ -2683,6 +2982,10 @@ function init(){
 }
 window.addEventListener('load', init);
 
+
+// Start notification scheduler
+setTimeout(runNotificationScheduler, 3000);
+setInterval(runNotificationScheduler, 30000);
 </script>
 </body>
 </html>
