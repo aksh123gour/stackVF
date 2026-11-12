@@ -1,5 +1,5 @@
-const CACHE = 'stack-v7';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE = 'stack-v8';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './google-apps-script.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));

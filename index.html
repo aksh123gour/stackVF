@@ -2480,23 +2480,42 @@ async function syncToGoogle(silent = false){
   }
   if(!silent) toast('Syncing to Google Cloud...');
   try {
+    // Clone state excluding heavy base64 photos to keep payload fast and lightweight
+    const syncState = Object.assign({}, S);
+    delete syncState.mealPhotos;
+
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({ action: 'sync', state: S })
+      body: JSON.stringify({ action: 'sync', state: syncState })
     });
-    const data = await res.json();
+
+    const resText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(resText);
+    } catch(parseErr) {
+      if(res.status === 401 || resText.includes('accounts.google.com') || resText.includes('<!doctype') || resText.includes('<!DOCTYPE')){
+        const errMsg = 'Access Denied (401): Set "Who has access" to "Anyone" in Apps Script deployment';
+        if(!silent) toast(errMsg);
+        const statusEl = document.getElementById('googleSyncStatus');
+        if(statusEl) statusEl.textContent = 'Error: Set "Who has access" to "Anyone" in Deploy';
+        return;
+      }
+      throw new Error('Non-JSON response from Apps Script');
+    }
+
     if(data.status === 'success'){
       S.settings.lastSync = Date.now();
       sv('settings');
       const statusEl = document.getElementById('googleSyncStatus');
       if(statusEl) statusEl.textContent = 'Last synced: Just now';
-      if(!silent) toast('Google Cloud Backup successful');
+      if(!silent) toast('Google Cloud Backup successful!');
     } else {
       if(!silent) toast('Sync error: ' + (data.message || 'Check Script'));
     }
   } catch(err){
-    if(!silent) toast('Sync failed · Check URL');
+    if(!silent) toast('Sync failed: ' + (err.message || 'Check URL'));
   }
 }
 
@@ -2552,7 +2571,17 @@ async function restoreFromGoogle(){
   toast('Fetching cloud backup...');
   try {
     const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=get');
-    const data = await res.json();
+    const resText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(resText);
+    } catch(e) {
+      if(res.status === 401 || resText.includes('accounts.google.com') || resText.includes('<!doctype') || resText.includes('<!DOCTYPE')){
+        toast('Access Denied (401): Set "Who has access" to "Anyone" in Apps Script');
+        return;
+      }
+      throw e;
+    }
     if(data.status === 'success' && data.state){
       Object.keys(data.state).forEach(k => {
         S[k] = data.state[k];
