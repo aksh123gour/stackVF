@@ -1,15 +1,39 @@
 {
   "name": "STACK",
   "short_name": "STACK",
-  "description": "Track your workouts, diet, and progress",
+  "id": "/stackVF/",
+  "description": "Personal fitness, strength training, and nutrition tracker",
   "start_url": "/stackVF/",
   "scope": "/stackVF/",
   "display": "standalone",
   "background_color": "#080808",
   "theme_color": "#080808",
   "orientation": "portrait",
+  "categories": ["health", "fitness", "lifestyle"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

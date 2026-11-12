@@ -1,4 +1,4 @@
-const CACHE = 'stack-v10';
+const CACHE = 'stack-v11';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './badge-96.png', './google-apps-script.js'];
 
 self.addEventListener('install', e => {
